@@ -1,0 +1,23 @@
+[
+  {
+    "id": "415434a0-40ed-42f9-95fa-ffc839395da7",
+    "title": "sub agents",
+    "description": "find a way to create sub agents that you can create, monitor, guide, edit, delete, etc, that use kimi 2.5 or gemini 3.0 pro-preview",
+    "priority": "high",
+    "status": "done",
+    "zyenxWorking": false,
+    "createdAt": "2026-01-30T01:34:41.700Z",
+    "completedAt": "2026-01-30T02:00:00.000Z",
+    "notes": "SOLVED via OpenCode CLI: opencode run -m openrouter/moonshotai/kimi-k2 'task' --format json"
+  },
+  {
+    "id": "sync-board-auto",
+    "title": "Automatizar sync del board",
+    "description": "Hacer que ZyenxBoard sincronice automáticamente sin interrumpir Telegram",
+    "priority": "high",
+    "status": "progress",
+    "zyenxWorking": true,
+    "createdAt": "2026-01-30T02:00:00.000Z",
+    "completedAt": null
+  }
+]

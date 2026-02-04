@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "type": "news",
+    "title": "🦞 OpenClaw 2026.1.30 Update",
+    "content": "Kimi K2.5 + Kimi Coding (Free!), MiniMax OAuth, Telegram fixes (threading/HTML), Shell completion.",
+    "timestamp": "2026-01-31T16:00:00Z"
+  },
+  {
+    "id": "2",
+    "type": "status",
+    "title": "📧 Email Config",
+    "content": "Updated to Outlook (zyenx@outlook.cl). Hit Microsoft IMAP block ('LOGIN failed'). Waiting for block to clear.",
+    "timestamp": "2026-01-31T16:15:00Z"
+  },
+  {
+    "id": "3",
+    "type": "insight",
+    "title": "🧠 Sub-Agent Strategy",
+    "content": "Use 'opencode' with Kimi K2 model for free coding tasks. Command: `opencode run -m openrouter/moonshotai/kimi-k2 ...`",
+    "timestamp": "2026-01-31T16:20:00Z"
+  }
+]

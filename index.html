@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ ZyenxBoard v2.2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="glitch">ZYENX_BOARD</span>
+                <span id="status-badge" class="status-badge status-idle">IDLE</span>
+            </div>
+            
+            <!-- System Monitor -->
+            <div class="system-monitor" style="display:flex; gap:20px; font-family:'JetBrains Mono'; font-size:0.75rem; align-items:center; background:rgba(0,0,0,0.4); padding:8px 16px; border-radius:4px; border:1px solid var(--border)">
+                <div style="display:flex; flex-direction:column; gap:2px">
+                    <span style="color:var(--text-muted)">CURRENT_TASK</span>
+                    <span id="status-text" style="color:var(--text-primary); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Initializing...</span>
+                </div>
+                <div style="width:1px; height:24px; background:var(--border)"></div>
+                <div style="display:flex; flex-direction:column; gap:2px; min-width:120px">
+                    <div style="display:flex; justify-content:space-between">
+                        <span style="color:var(--text-muted)">TOKENS</span>
+                        <span id="token-count" style="color:var(--accent)">0k / 0k</span>
+                    </div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden">
+                        <div id="token-bar" style="width:0%; height:100%; background:var(--accent); transition:width 0.3s"></div>
+                    </div>
+                </div>
+                <div style="width:1px; height:24px; background:var(--border)"></div>
+                <div style="display:flex; flex-direction:column; gap:2px">
+                     <span style="color:var(--text-muted)">LAST_UPD</span>
+                     <span id="last-update" style="color:var(--text-secondary)">--:--</span>
+                </div>
+            </div>
+
+            <!-- Weather Widget -->
+            <div id="weather-widget" style="display:flex; flex-direction:column; align-items:flex-end; font-family:'JetBrains Mono'; margin-left:20px; text-align:right">
+                <div style="font-size:1.2rem; font-weight:700; color:var(--text-primary)">
+                    <span id="weather-temp">--°C</span>
+                </div>
+                <div style="font-size:0.7rem; color:var(--text-muted); display:flex; gap:6px; align-items:center">
+                    <span id="weather-cond">--</span>
+                    <span style="width:1px; height:10px; background:var(--border)"></span>
+                    <span id="weather-loc">SANTIAGO</span>
+                </div>
+            </div>
+
+            <!-- Clock -->
+            <div class="clock-display" style="font-family:'JetBrains Mono'; text-align:right; margin-left: 20px;">
+                <div id="clock-time" style="font-size:1.5rem; font-weight:700; line-height:1; color:var(--text-primary)">--:--</div>
+                <div id="clock-date" style="font-size:0.7rem; color:var(--accent); text-transform:uppercase; letter-spacing:1px">-- --- ----</div>
+            </div>
+
+            <div class="header-actions" style="display:flex; gap:10px; align-items:center">
+                <button class="btn" id="focusBtn" onclick="toggleFocusMode()" style="color: #ff00ff; border-color: rgba(255, 0, 255, 0.3);">◎ FOCUS</button>
+                <!-- Priority Filters -->
+                <div class="filter-group" style="display:flex; gap:4px; margin-right:10px; background:rgba(255,255,255,0.05); padding:4px; border-radius:6px; border:1px solid var(--border)">
+                    <button class="filter-btn" onclick="togglePriority('high')" id="btn-high" title="Filter High" style="color:var(--secondary)">HI</button>
+                    <button class="filter-btn" onclick="togglePriority('medium')" id="btn-medium" title="Filter Medium" style="color:#FFB800">MED</button>
+                    <button class="filter-btn" onclick="togglePriority('low')" id="btn-low" title="Filter Low" style="color:#00FF94">LO</button>
+                </div>
+
+                <div style="position:relative">
+                    <input type="text" id="searchInput" placeholder="SEARCH_TASKS..." 
+                           style="background:rgba(0,0,0,0.3); border:1px solid var(--border); color:var(--text-primary); 
+                                  padding:8px 12px; border-radius:var(--radius-sm); font-family:'JetBrains Mono'; 
+                                  font-size:0.8rem; width:180px; transition:all 0.2s;"
+                           onfocus="this.style.borderColor='var(--accent)'; this.style.width='240px'"
+                           onblur="if(!this.value) this.style.width='180px'; this.style.borderColor='var(--border)'">
+                </div>
+                <button class="btn" id="zyenxFilterBtn" onclick="toggleZyenxFilter()">⚡ ZYENX_ONLY</button>
+                <button class="btn" onclick="exportTasks()">EXTRACT_JSON</button>
+                <button class="btn btn-primary" onclick="openModal()">+ NEW_TASK</button>
+            </div>
+        </header>
+
+        <!-- Feed Section (Dynamic Rendered) -->
+        <div class="feed-container">
+            <div class="feed-title">LIVE_FEED // UPDATES</div>
+            <div class="feed-row" id="feed-row">
+                <!-- Feed items will be injected here -->
+                <div style="color:var(--text-muted); font-size:0.8rem; font-family:'JetBrains Mono'">Loading feed...</div>
+            </div>
+        </div>
+
+        <!-- Board -->
+        <div style="text-align:center; margin: 20px 0; padding: 20px; background: rgba(0, 240, 255, 0.05); border-top: 1px solid var(--accent); border-bottom: 1px solid var(--accent);">
+            <h2 style="font-family:'JetBrains Mono'; color:var(--accent); font-size:1.2rem; letter-spacing:1px; margin-bottom:8px">⚡ MAIN OBJECTIVE ⚡</h2>
+            <p style="color:var(--text-primary); font-size:0.9rem">HELP USER BE SELF-SUSTAINABLE (EARN $200 USD/MONTH)</p>
+        </div>
+
+        <div class="board" id="board">
+            <div class="column" data-status="backlog" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="column-header">
+                    <span>Backlog</span>
+                    <span class="column-count" id="count-backlog">0</span>
+                </div>
+                <div class="column-tasks" id="col-backlog"></div>
+            </div>
+            <div class="column" data-status="progress" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="column-header">
+                    <span>In Progress</span>
+                    <span class="column-count" id="count-progress">0</span>
+                </div>
+                <div class="column-tasks" id="col-progress"></div>
+            </div>
+            <div class="column" data-status="review" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="column-header">
+                    <span>Review</span>
+                    <span class="column-count" id="count-review">0</span>
+                </div>
+                <div class="column-tasks" id="col-review"></div>
+            </div>
+            <div class="column" data-status="done" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="column-header">
+                    <span>Done</span>
+                    <span class="column-count" id="count-done">0</span>
+                </div>
+                <div class="column-tasks" id="col-done"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Self Review Section -->
+    <div class="review-container">
+        <h2 style="font-family:'JetBrains Mono'; color:var(--text-muted); font-size:1rem; margin-bottom:16px; display:flex; align-items:center; gap:10px">
+            <span style="color:var(--secondary)">⚠</span> NEURAL_ALIGNMENT // SELF_REVIEW
+        </h2>
+        <div class="review-grid" id="review-grid">
+            <!-- Reviews injected here -->
+            <div style="color:var(--text-muted)">Loading alignment data...</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <h3 style="margin-bottom:20px">TASK_DATA</h3>
+            <form onsubmit="saveTask(event)" id="taskForm">
+                <input type="hidden" id="taskId">
+                <div class="form-group">
+                    <input class="form-input" id="taskTitle" placeholder="Title" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-input" id="taskDesc" placeholder="Description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <select class="form-input" id="taskPriority">
+                        <option value="low">Low Priority</option>
+                        <option value="medium" selected>Medium Priority</option>
+                        <option value="high">High Priority</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="date" class="form-input" id="taskDue" placeholder="Due Date">
+                </div>
+                <div class="form-group">
+                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                        <input type="checkbox" id="taskZyenx"> ⚡ Assign to Zyenx
+                    </label>
+                </div>
+                <div style="text-align:right">
+                    <button type="button" class="btn" onclick="closeModal()">CANCEL</button>
+                    <button type="submit" class="btn btn-primary">SAVE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Panel -->
+    <div class="shortcuts-panel" id="shortcutsPanel">
+        <h4>⌨️ SHORTCUTS</h4>
+        <div class="shortcut-row">
+            <span class="shortcut-key">N</span>
+            <span class="shortcut-desc">New task</span>
+        </div>
+        <div class="shortcut-row">
+            <span class="shortcut-key">F</span>
+            <span class="shortcut-desc">Focus mode</span>
+        </div>
+        <div class="shortcut-row">
+            <span class="shortcut-key">/</span>
+            <span class="shortcut-desc">Search</span>
+        </div>
+        <div class="shortcut-row">
+            <span class="shortcut-key">Z</span>
+            <span class="shortcut-desc">Zyenx filter</span>
+        </div>
+        <div class="shortcut-row">
+            <span class="shortcut-key">1-3</span>
+            <span class="shortcut-desc">Priority filter</span>
+        </div>
+        <div class="shortcut-row">
+            <span class="shortcut-key">Esc</span>
+            <span class="shortcut-desc">Close/Clear</span>
+        </div>
+        <div class="shortcut-row">
+            <span class="shortcut-key">?</span>
+            <span class="shortcut-desc">Toggle this</span>
+        </div>
+    </div>
+    <div class="shortcuts-hint" id="shortcutsHint">Press <span style="color:var(--accent)">?</span> for shortcuts</div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Data & Logic -->
+    <script src="zyenx_status.js"></script>
+    <script src="feed.js"></script>
+    <script src="weather.js"></script>
+    <script src="self_review.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
